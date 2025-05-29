@@ -1,6 +1,13 @@
-@FootballApi_HostAddress = http://localhost:5223
+@RootCall = http://localhost:5223
 
-GET {{FootballApi_HostAddress}}/weatherforecast/
+GET {{RootCall}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{RootCall}}/api/FootballTeam
+Accept: application/json
+
+###
+GET {{RootCall}}/api/FootballPlayer
+Accept: application/json
