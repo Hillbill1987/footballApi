@@ -40,5 +40,52 @@ namespace FootballApi.Controllers
         {
             return Ok(players);
         }
+
+        [HttpGet("{id}")]
+        public ActionResult<FootballPlayer> GetPlayerById(int id)
+        {
+            var player = players.FirstOrDefault(x => x.Id == id);
+
+            if (player == null)
+                return NotFound();
+
+            return Ok(player);
+        }
+
+        [HttpPost]
+        public ActionResult<FootballPlayer> AddPlayer(FootballPlayer player)
+        {
+            if (player == null)
+                return BadRequest();
+            players.Add(player);
+            return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdatePlayer(int id, FootballPlayer updatedPlayer)
+        {
+            var player = players.FirstOrDefault(x => x.Id == id);
+
+            if (player == null)
+                return NotFound();
+            player.Id = updatedPlayer.Id;
+            player.FirstName = updatedPlayer.FirstName;
+            player.LastName = updatedPlayer.LastName;
+            player.Age = updatedPlayer.Age;
+            player.Team = updatedPlayer.Team;
+
+            return NoContent();
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeletePLayer(int id)
+        {
+            var player = players.FirstOrDefault(x => x.Id == id);
+
+            if (player == null)
+                return NotFound();
+
+            players.Remove(player);
+            return NoContent();
+        }
     }
 }
