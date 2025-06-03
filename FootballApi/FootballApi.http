@@ -1,6 +1,66 @@
-@FootballApi_HostAddress = http://localhost:5223
+@RootCall = http://localhost:5223
 
-GET {{FootballApi_HostAddress}}/weatherforecast/
+GET {{RootCall}}/weatherforecast/
 Accept: application/json
 
 ###
+
+GET {{RootCall}}/api/FootballTeam
+Accept: application/json
+
+###
+GET {{RootCall}}/api/FootballPlayer
+Accept: application/json
+
+###
+GET {{RootCall}}/api/FootballTeam/2
+Accept: application/json
+
+###
+GET {{RootCall}}/api/FootballPlayer/2
+Accept: application/json
+###
+POST {{RootCall}}/api/FootballTeam
+Content-Type: application/json
+{
+    "id":6,
+    "name": "FunTime frankie",
+    "yearFounded": 1890,
+    "country": "Russia",
+    "manager": "Mr Deez"
+}
+###
+POST {{RootCall}}/api/FootballPlayer
+Content-Type: application/json
+{
+    "id":6,
+    "firstname": "red",
+    "lastname": "rooster",
+    "age": 34,
+    "team": "hollow wood"
+}
+###
+PUT {{RootCall}}/api/FootballPlayer/1
+Content-Type: application/json
+{
+    "id": 1,
+    "firstName": "Dave",
+    "lastName": "yellow",
+    "age": 25,
+    "team": "Underwood"
+}
+###
+PUT {{RootCall}}/api/FootballTeam/1
+Content-Type: application/json
+{
+    "id": 1,
+    "name": "Fc coca Cola",
+    "yearFounded": 1987,
+    "country": "England",
+    "manager": "Mr T"
+}
+###
+DELETE {{RootCall}}/api/FootballTeam/3
+
+###
+DELETE {{RootCall}}/api/FootballPlayer/1
