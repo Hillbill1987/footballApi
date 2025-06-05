@@ -1,6 +1,8 @@
-﻿using FootballApi.Models;
+﻿using FootballApi.Data;
+using FootballApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FootballApi.Controllers
 {
@@ -8,43 +10,22 @@ namespace FootballApi.Controllers
     [ApiController]
     public class FootballPlayerController : ControllerBase
     {
-        static private List<FootballPlayer> players = new List<FootballPlayer>
+        private readonly DataContext _dataContext;
+        public FootballPlayerController(DataContext dataContext)
         {
-            new FootballPlayer
-            {
-                Id = 1,
-                FirstName = "Dave",
-                LastName = "test",
-                Age = 25,
-                Team = "Underwood"
-            },
-            new FootballPlayer
-            {
-                Id = 2,
-                FirstName = "Roger",
-                LastName= "Owens",
-                Age = 35,
-                Team = "Cola"
-            },
-            new FootballPlayer
-            {
-                Id = 3,
-                FirstName = "Kello",
-                LastName = "Dance",
-                Age =30,
-                Team = "Water"
-            }
-        };
+            _dataContext = dataContext;
+        }
+
         [HttpGet]
-        public ActionResult<List<FootballPlayer>> GetPlayers()
+        public async Task<ActionResult<List<FootballPlayer>>> GetPlayers()
         {
-            return Ok(players);
+            return Ok(await _dataContext.players.ToListAsync());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<FootballPlayer> GetPlayerById(int id)
+        public async Task<ActionResult<FootballPlayer>> GetPlayerById(int id)
         {
-            var player = players.FirstOrDefault(x => x.Id == id);
+            var player = await _dataContext.players.FindAsync(id);
 
             if (player == null)
                 return NotFound();
@@ -53,18 +34,19 @@ namespace FootballApi.Controllers
         }
 
         [HttpPost]
-        public ActionResult<FootballPlayer> AddPlayer(FootballPlayer player)
+        public async Task<ActionResult<FootballPlayer>> AddPlayer(FootballPlayer player)
         {
             if (player == null)
                 return BadRequest();
-            players.Add(player);
+            _dataContext.players.Add(player);
+            await _dataContext.SaveChangesAsync();
             return CreatedAtAction(nameof(GetPlayerById), new { id = player.Id }, player);
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdatePlayer(int id, FootballPlayer updatedPlayer)
+        public async Task<IActionResult> UpdatePlayer(int id, FootballPlayer updatedPlayer)
         {
-            var player = players.FirstOrDefault(x => x.Id == id);
+            var player = await _dataContext.players.FindAsync(id);
 
             if (player == null)
                 return NotFound();
@@ -74,17 +56,20 @@ namespace FootballApi.Controllers
             player.Age = updatedPlayer.Age;
             player.Team = updatedPlayer.Team;
 
+            await _dataContext.SaveChangesAsync();
+
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeletePLayer(int id)
+        public async Task<IActionResult> DeletePLayer(int id)
         {
-            var player = players.FirstOrDefault(x => x.Id == id);
+            var player = await _dataContext.players.FindAsync(id);
 
             if (player == null)
                 return NotFound();
 
-            players.Remove(player);
+            _dataContext.players.Remove(player);
+            await _dataContext.SaveChangesAsync();
             return NoContent();
         }
     }
