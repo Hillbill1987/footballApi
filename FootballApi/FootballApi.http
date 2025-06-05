@@ -17,13 +17,12 @@ GET {{RootCall}}/api/FootballTeam/2
 Accept: application/json
 
 ###
-GET {{RootCall}}/api/FootballPlayer/2
+GET {{RootCall}}/api/FootballPlayer/3
 Accept: application/json
 ###
 POST {{RootCall}}/api/FootballTeam
 Content-Type: application/json
 {
-    "id":6,
     "name": "FunTime frankie",
     "yearFounded": 1890,
     "country": "Russia",
@@ -33,7 +32,6 @@ Content-Type: application/json
 POST {{RootCall}}/api/FootballPlayer
 Content-Type: application/json
 {
-    "id":6,
     "firstname": "red",
     "lastname": "rooster",
     "age": 34,

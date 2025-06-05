@@ -1,6 +1,8 @@
-﻿using FootballApi.Models;
+﻿using FootballApi.Data;
+using FootballApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FootballApi.Controllers
 {
@@ -8,61 +10,39 @@ namespace FootballApi.Controllers
     [ApiController]
     public class FootballTeamController : ControllerBase
     {
-        static private List<FootballTeam> Teams = new List<FootballTeam>
+        private readonly DataContext _dataContext;
+        public FootballTeamController(DataContext dataContext)
         {
-            new FootballTeam
-            {
-                Id = 1,
-                Name = "Fc Cola",
-                YearFounded = 1987,
-                Country = "England",
-                Manager = "Mr T"
-            },
-            new FootballTeam
-            {
-                Id = 2,
-                Name = "RunTime Warriors",
-                YearFounded = 1912,
-                Country = "Nigeria",
-                Manager = "Mr No"
-            },
-            new FootballTeam
-            {
-                Id= 3,
-                Name = "Shavers head",
-                YearFounded = 1956,
-                Country = "Scotland",
-                Manager = "Mr Yu"
-            }
-
-        };
+            _dataContext = dataContext;
+        }
         [HttpGet]
-        public ActionResult<List<FootballTeam>> GetTeams()
+        public async Task<ActionResult<List<FootballTeam>>> GetTeams()
         {
-            return Ok(Teams);
+            return Ok(await _dataContext.teams.ToListAsync());
         }
         [HttpGet("{id}")]
-        public ActionResult<FootballTeam> GetTeamById(int id)
+        public async Task<ActionResult<FootballTeam>> GetTeamById(int id)
         {
-            var team = Teams.FirstOrDefault(t => t.Id == id);
-            if(team == null)
+            var team = await _dataContext.teams.FindAsync(id);
+            if (team == null)
                 return NotFound();
 
             return Ok(team);
         }
 
         [HttpPost]
-        public ActionResult AddTeam(FootballTeam team)
+        public async Task<ActionResult<FootballTeam>> AddTeam(FootballTeam team)
         {
             if (team == null)
                 return BadRequest();
-            Teams.Add(team);
+            _dataContext.teams.Add(team);
+            await _dataContext.SaveChangesAsync();
             return CreatedAtAction(nameof(GetTeamById), new { id = team.Id }, team);
         }
         [HttpPut("{id}")]
-        public IActionResult UpdateTeam(int id,FootballTeam updatedteam)
+        public async Task<IActionResult> UpdateTeam(int id, FootballTeam updatedteam)
         {
-            var team = Teams.FirstOrDefault(t => t.Id == id);
+            var team = await _dataContext.teams.FindAsync(id);
             if (team == null)
                 return NotFound();
 
@@ -72,16 +52,19 @@ namespace FootballApi.Controllers
             team.Country = updatedteam.Country;
             team.Manager = updatedteam.Manager;
 
+            await _dataContext.SaveChangesAsync();
+
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteTeam(int id)
+        public async Task<IActionResult> DeleteTeam(int id)
         {
-            var team = Teams.FirstOrDefault(t => t.Id == id);
+            var team = await _dataContext.teams.FindAsync(id);
             if (team == null)
                 return NotFound();
 
-            Teams.Remove(team);
+            _dataContext.teams.Remove(team);
+            await _dataContext.SaveChangesAsync();
             return NoContent();
         }
 
